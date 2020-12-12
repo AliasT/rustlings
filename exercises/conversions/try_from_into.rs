@@ -11,8 +11,6 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -22,22 +20,52 @@ struct Color {
 // but the slice implementation needs to check the slice length!
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
-// Tuple implementation
-impl TryFrom<(i16, i16, i16)> for Color {
-    type Error = String;
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
-}
-
 // Array implementation
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [red, green, blue] = arr;
+        for c in [red, green, blue].iter() {
+            if *c > 256 || *c < 0 {
+                return Err(String::from("Err"));
+            }
+        }
+        Ok(Color {
+            red: red as u8,
+            blue: blue as u8,
+            green: green as u8,
+        })
+    }
+}
+
+// Tuple implementation
+impl TryFrom<(i16, i16, i16)> for Color {
+    type Error = String;
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (red, green, blue) = tuple;
+        Color::try_from([red, green, blue])
+    }
 }
 
 // Slice implementation
 impl TryFrom<&[i16]> for Color {
     type Error = String;
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if let [red, green, blue] = slice {
+            for c in [red, green, blue].iter() {
+                if *c > &256 || *c < &0 {
+                    return Err(String::from("Err"));
+                }
+            }
+            Ok(Color {
+                red: *red as u8,
+                blue: *blue as u8,
+                green: *green as u8,
+            })
+        } else {
+            Err(String::from("Err"))
+        }
+    }
 }
 
 fn main() {
